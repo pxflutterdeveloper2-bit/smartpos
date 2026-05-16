@@ -79,4 +79,23 @@ class DatabaseHelper {
     final db = await database;
     return db.delete('products', where: 'id=?', whereArgs: [id]);
   }
+  Future<Map<String, num>> getDashboardStats() async {
+    final db = await database;
+    final sales =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT ROUND(SUM(total_amount)) FROM orders'),
+        ) ??
+            0;
+    final orders =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM orders'),
+        ) ??
+            0;
+    final products =
+        Sqflite.firstIntValue(
+          await db.rawQuery('SELECT COUNT(*) FROM products'),
+        ) ??
+            0;
+    return {'sales': sales, 'orders': orders, 'products': products};
+  }
 }
