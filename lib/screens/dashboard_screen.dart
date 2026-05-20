@@ -20,9 +20,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final pages = [
       _DashboardHome(onNavigate: _setTab),
-      const ProductScreen(),
-      const ProductScreen(),
-      const ProductScreen(),
+      const ProductsScreen(),
+      const Placeholder(),
+      const Placeholder(),
     ];
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: pages),

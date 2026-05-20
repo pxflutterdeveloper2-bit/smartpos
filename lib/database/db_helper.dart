@@ -56,6 +56,17 @@ class DatabaseHelper {
     ''');
   }
 
+  Future<List<Product>> getProducts({String query = ''}) async {
+    final db = await database;
+    final maps = await db.query(
+      'products',
+      where: query.trim().isEmpty ? null : 'LOWER(name) LIKE ?',
+      whereArgs: query.trim().isEmpty ? null : ['%${query.toLowerCase()}%'],
+      orderBy: 'name ASC',
+    );
+    return maps.map(Product.fromMap).toList();
+  }
+
   Future<int> insertProduct(Product product) async {
     final db = await database;
     return db.insert(
@@ -79,23 +90,24 @@ class DatabaseHelper {
     final db = await database;
     return db.delete('products', where: 'id=?', whereArgs: [id]);
   }
+
   Future<Map<String, num>> getDashboardStats() async {
     final db = await database;
     final sales =
         Sqflite.firstIntValue(
           await db.rawQuery('SELECT ROUND(SUM(total_amount)) FROM orders'),
         ) ??
-            0;
+        0;
     final orders =
         Sqflite.firstIntValue(
           await db.rawQuery('SELECT COUNT(*) FROM orders'),
         ) ??
-            0;
+        0;
     final products =
         Sqflite.firstIntValue(
           await db.rawQuery('SELECT COUNT(*) FROM products'),
         ) ??
-            0;
+        0;
     return {'sales': sales, 'orders': orders, 'products': products};
   }
 }
